@@ -1,9 +1,16 @@
 package utils
 
 import models.Errors.{COULD_NOT_READ_MEASUREMENT, COULD_NOT_READ_REPORT_LINE, ServiceException}
-import models.Models.{NaNSensorHumidityStat, SensorHumidityStat, SensorStatistics}
+import models.Models.{NaNSensorHumidityStat, SensorHumidityStat, SensorMeasurement, SensorStatistics}
+import services.SensorReportService.SensorMeasurementEither
 
-trait StdOutUtil {
+trait AppUtil {
+  def extractValidSensorMeasurements(sensorMeasurementsWithErrors: Seq[SensorMeasurementEither]): Seq[SensorMeasurement] =
+    sensorMeasurementsWithErrors.collect({ case Right(sm) => sm })
+
+  def extractServiceExceptions(sensorMeasurementsWithErrors: Seq[SensorMeasurementEither]): Seq[ServiceException] =
+    sensorMeasurementsWithErrors.collect({ case Left(ex) => ex })
+
   def printSensorStats(sensorStats: SensorStatistics): Seq[Unit] = {
     println(s"Number of processed files: ${sensorStats.numberOfFilesProcessed}")
     println(s"Number of processed measurements: ${sensorStats.numberOfMeasurementsProcessed}")

@@ -2,7 +2,7 @@ package services
 
 import java.io.File
 
-import models.Errors
+import models.{Errors, Factory}
 import models.Errors.ServiceException
 import models.Models.{FailedSensorMeasurement, RawSensorMeasurement, SensorMeasurement, SuccessSensorMeasurement}
 import services.SensorReportService.SensorMeasurementEither
@@ -11,7 +11,9 @@ import utils.Constants.CSV_FILE_EXTENSION
 import scala.io.BufferedSource
 
 class SensorReportService {
-  def getSensorMeasurements(reportsPath: String): (Seq[SensorMeasurementEither], Int) = {
+  lazy val reportsPath: String = Factory.properties.reportsPath
+
+  def getSensorMeasurements: (Seq[SensorMeasurementEither], Int) = {
     val reportFiles = getReportFiles(reportsPath)
     val sensorMeasurementsWithErrors = reportFiles.flatMap(reportFile => generateSensorMeasurementModel(reportFile))
 
